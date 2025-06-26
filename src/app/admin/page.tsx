@@ -6,6 +6,20 @@ import ContactModel from '@/models/Contact';
 import ReferralModel from '@/models/Referral';
 import type { Subscription, Trial, Contact, Referral } from '@/lib/types';
 
+const formatDate = (date: any) => {
+  if (!date) return 'N/A';
+  try {
+    // Ensuring the date is treated as a Date object before formatting
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  } catch (e) {
+    return 'Invalid Date';
+  }
+};
+
 async function getData() {
   await connectDB();
 
@@ -18,9 +32,9 @@ async function getData() {
     id: doc._id.toString(),
     name: doc.name,
     email: doc.email,
-    date: doc.date,
-    status: doc.status,
-    plan: doc.plan,
+    date: formatDate(doc.createdAt),
+    status: doc.status || 'New',
+    plan: doc.planName,
     type: 'subscription',
   }));
 
@@ -28,8 +42,8 @@ async function getData() {
     id: doc._id.toString(),
     name: doc.name,
     email: doc.email,
-    date: doc.date,
-    status: doc.status,
+    date: formatDate(doc.createdAt),
+    status: doc.status || 'New',
     trialEndDate: doc.trialEndDate,
     type: 'trial',
   }));
@@ -38,8 +52,8 @@ async function getData() {
     id: doc._id.toString(),
     name: doc.name,
     email: doc.email,
-    date: doc.date,
-    status: doc.status,
+    date: formatDate(doc.createdAt),
+    status: doc.status || 'New',
     message: doc.message,
     type: 'contact',
   }));
@@ -48,8 +62,8 @@ async function getData() {
     id: doc._id.toString(),
     name: doc.name,
     email: doc.email,
-    date: doc.date,
-    status: doc.status,
+    date: formatDate(doc.createdAt),
+    status: doc.status || 'New',
     referredBy: doc.referredBy,
     type: 'referral',
   }));

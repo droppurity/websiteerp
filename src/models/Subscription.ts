@@ -3,9 +3,14 @@ import mongoose, { Schema, models } from 'mongoose';
 const SubscriptionSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  date: { type: String, required: true },
-  status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], required: true },
-  plan: { type: String, enum: ['Basic', 'Premium', 'Enterprise'], required: true },
+  phone: { type: String },
+  location: { type: String },
+  address: { type: String },
+  purifierName: { type: String },
+  planName: { type: String, enum: ['Basic', 'Premium', 'Enterprise'], required: true },
+  tenure: { type: String },
+  createdAt: { type: Date, required: true, default: Date.now },
+  status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
   type: { type: String, default: 'subscription' },
 });
 
