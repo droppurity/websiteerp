@@ -23,6 +23,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { AllData, Contact, Status, Subscription, Trial, Referral } from '@/lib/types';
 import {
+  Bell,
   CalendarClock,
   MessageCircle,
   MoreHorizontal,
@@ -32,6 +33,8 @@ import {
 import { ScheduleDialog } from './schedule-dialog';
 import { SuggestReplyDialog } from './suggest-reply-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { getToken, onMessage } from 'firebase/messaging';
+import { messaging } from '@/lib/firebase';
 
 interface UnifiedViewClientProps {
   data: {
@@ -78,6 +81,55 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
   const { toast } = useToast();
   const router = useRouter();
   const lastCheckRef = useRef(new Date());
+
+  const requestPermission = async () => {
+    if (!messaging) {
+        toast({ variant: "destructive", title: "Error", description: "Messaging not supported in this browser." });
+        return;
+    }
+
+    console.log('Requesting permission...');
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+        
+        const vapidKey = process.env.NEXT_PUBLIC_FCM_VAPID_KEY;
+        if (!vapidKey) {
+            console.error("VAPID key not found. Please set NEXT_PUBLIC_FCM_VAPID_KEY in your .env file.");
+            toast({ variant: "destructive", title: "Configuration Error", description: "VAPID key for notifications is missing." });
+            return;
+        }
+
+        const token = await getToken(messaging, { vapidKey: vapidKey });
+        if (token) {
+          console.log('FCM Token:', token);
+          toast({ title: "Notifications Enabled!", description: "You will now receive notifications for new requests." });
+        } else {
+          console.log('Can not get token.');
+          toast({ variant: "destructive", title: "Error", description: "Could not get notification token." });
+        }
+      } else {
+        console.log('Unable to get permission to notify.');
+        toast({ variant: "destructive", title: "Permission Denied", description: "You have denied notification permissions." });
+      }
+    } catch (error) {
+        console.error("An error occurred while getting token. ", error);
+        toast({ variant: "destructive", title: "Error", description: "An error occurred while enabling notifications." });
+    }
+  };
+
+  useEffect(() => {
+    if (messaging) {
+      onMessage(messaging, (payload) => {
+        console.log('Message received. ', payload);
+        toast({
+          title: payload.notification?.title || "New Notification",
+          description: payload.notification?.body || "",
+        });
+      });
+    }
+  }, [toast]);
 
   useEffect(() => {
     setAllData(initialData);
@@ -168,8 +220,12 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
   return (
     <>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="flex items-center">
+        <div className="flex items-center justify-between">
             <h1 className="font-headline text-3xl font-bold">Unified View</h1>
+             <Button variant="outline" onClick={requestPermission}>
+                <Bell className="mr-2 h-4 w-4" />
+                Enable Notifications
+            </Button>
         </div>
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           <AnalyticsCard
