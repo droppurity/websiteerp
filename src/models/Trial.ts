@@ -7,6 +7,8 @@ const TrialSchema = new Schema({
   status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], required: true },
   trialEndDate: { type: String, required: true },
   type: { type: String, default: 'trial' },
+}, {
+  collection: 'free_trials'
 });
 
 const TrialModel = models.Trial || mongoose.model('Trial', TrialSchema);
