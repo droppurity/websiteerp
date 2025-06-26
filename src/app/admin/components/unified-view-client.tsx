@@ -1,7 +1,8 @@
 'use client';
 
 import type { FC, ReactNode } from 'react';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,6 +31,7 @@ import {
 } from 'lucide-react';
 import { ScheduleDialog } from './schedule-dialog';
 import { SuggestReplyDialog } from './suggest-reply-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface UnifiedViewClientProps {
   data: {
@@ -69,10 +71,43 @@ const statusColors: Record<Status, string> = {
 
 export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps) {
   const [allData, setAllData] = useState(initialData);
-
   const [isScheduleOpen, setScheduleOpen] = useState(false);
   const [isSuggestOpen, setSuggestOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<AllData | null>(null);
+  
+  const { toast } = useToast();
+  const router = useRouter();
+  const lastCheckRef = useRef(new Date());
+
+  useEffect(() => {
+    setAllData(initialData);
+  }, [initialData]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/check-new?lastCheck=${lastCheckRef.current.toISOString()}`);
+        if (!response.ok) {
+          return;
+        }
+        const data = await response.json();
+        
+        lastCheckRef.current = new Date();
+
+        if (data.newItems > 0) {
+          toast({
+            title: "New Request!",
+            description: `You have ${data.newItems} new request(s). The page will now refresh.`,
+          });
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [toast, router]);
 
   const handleUpdateStatus = (id: string, type: AllData['type'], newStatus: Status) => {
     setAllData(prevData => {
