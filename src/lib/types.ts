@@ -15,7 +15,12 @@ export interface Subscription extends DataItem {
 
 export interface Trial extends DataItem {
   type: 'trial';
-  trialEndDate: string;
+  phone?: string;
+  location?: string;
+  address?: string;
+  purifierName?: string;
+  planName?: string;
+  tenure?: string;
 }
 
 export interface Contact extends DataItem {

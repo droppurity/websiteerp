@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { subscriptions, trials, contacts, referrals } from '@/lib/data';
 import type { AllData, Contact, Status, Subscription, Trial, Referral } from '@/lib/types';
 import {
   CalendarClock,
@@ -212,7 +211,11 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Trial End Date</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Address</TableHead>
+                    <TableHead>Purifier</TableHead>
+                    <TableHead>Plan</TableHead>
+                    <TableHead>Tenure</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>
@@ -225,7 +228,19 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                     <TableRow key={trial.id}>
                       <TableCell className="font-medium">{trial.name}</TableCell>
                       <TableCell>{trial.email}</TableCell>
-                      <TableCell>{trial.trialEndDate}</TableCell>
+                      <TableCell>{trial.phone}</TableCell>
+                      <TableCell>
+                        {trial.location ? (
+                          <a href={trial.location} target="_blank" rel="noopener noreferrer" className="underline">
+                            {trial.address}
+                          </a>
+                        ) : (
+                          trial.address
+                        )}
+                      </TableCell>
+                      <TableCell>{trial.purifierName}</TableCell>
+                      <TableCell>{trial.planName}</TableCell>
+                      <TableCell>{trial.tenure}</TableCell>
                       <TableCell>{trial.date}</TableCell>
                       <TableCell>
                          <Badge className={`${statusColors[trial.status]} text-primary-foreground`}>{trial.status}</Badge>
@@ -276,10 +291,10 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Referred By</TableHead>
                     <TableHead>Friend Name</TableHead>
                     <TableHead>Friend Mobile</TableHead>
                     <TableHead>Friend Address</TableHead>
-                    <TableHead>Referred By</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>
@@ -290,10 +305,10 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                 <TableBody>
                   {allData.referrals.map((referral) => (
                     <TableRow key={referral.id}>
-                      <TableCell className="font-medium">{referral.name}</TableCell>
+                      <TableCell className="font-medium">{referral.referredBy}</TableCell>
+                      <TableCell>{referral.name}</TableCell>
                       <TableCell>{referral.friendMobile}</TableCell>
                       <TableCell>{referral.friendAddress}</TableCell>
-                      <TableCell>{referral.referredBy}</TableCell>
                       <TableCell>{referral.date}</TableCell>
                       <TableCell>
                          <Badge className={`${statusColors[referral.status]} text-primary-foreground`}>{referral.status}</Badge>

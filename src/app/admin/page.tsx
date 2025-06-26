@@ -9,7 +9,6 @@ import type { Subscription, Trial, Contact, Referral } from '@/lib/types';
 const formatDate = (date: any) => {
   if (!date) return 'N/A';
   try {
-    // Ensuring the date is treated as a Date object before formatting
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -44,7 +43,12 @@ async function getData() {
     email: doc.email,
     date: formatDate(doc.createdAt),
     status: doc.status || 'New',
-    trialEndDate: doc.trialEndDate,
+    phone: doc.phone,
+    location: doc.location,
+    address: doc.address,
+    purifierName: doc.purifierName,
+    planName: doc.planName,
+    tenure: doc.tenure,
     type: 'trial',
   }));
 
