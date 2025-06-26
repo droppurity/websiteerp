@@ -60,11 +60,12 @@ async function getData() {
 
   const referrals: Referral[] = referralsDocs.map((doc: any) => ({
     id: doc._id.toString(),
-    name: doc.name,
-    email: doc.email,
+    name: doc.friendName,
     date: formatDate(doc.createdAt),
     status: doc.status || 'New',
-    referredBy: doc.referredBy,
+    referredBy: doc.customerId,
+    friendAddress: doc.friendAddress,
+    friendMobile: doc.friendMobile,
     type: 'referral',
   }));
 

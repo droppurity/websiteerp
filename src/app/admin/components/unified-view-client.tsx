@@ -276,8 +276,9 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
+                    <TableHead>Friend Name</TableHead>
+                    <TableHead>Friend Mobile</TableHead>
+                    <TableHead>Friend Address</TableHead>
                     <TableHead>Referred By</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
@@ -290,8 +291,9 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                   {allData.referrals.map((referral) => (
                     <TableRow key={referral.id}>
                       <TableCell className="font-medium">{referral.name}</TableCell>
-                      <TableCell>{referral.email}</TableCell>
-                       <TableCell>{referral.referredBy}</TableCell>
+                      <TableCell>{referral.friendMobile}</TableCell>
+                      <TableCell>{referral.friendAddress}</TableCell>
+                      <TableCell>{referral.referredBy}</TableCell>
                       <TableCell>{referral.date}</TableCell>
                       <TableCell>
                          <Badge className={`${statusColors[referral.status]} text-primary-foreground`}>{referral.status}</Badge>

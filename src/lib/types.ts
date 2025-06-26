@@ -3,7 +3,7 @@ export type Status = "New" | "Contacted" | "Resolved" | "Closed";
 export interface DataItem {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   date: string;
   status: Status;
 }
@@ -26,6 +26,8 @@ export interface Contact extends DataItem {
 export interface Referral extends DataItem {
   type: 'referral';
   referredBy: string;
+  friendAddress: string;
+  friendMobile: string;
 }
 
 export type AllData = Subscription | Trial | Contact | Referral;
