@@ -12,20 +12,22 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import type { Contact } from '@/lib/types';
+import type { AllData } from '@/lib/types';
 import { getSuggestedReply } from '../actions';
 import { Sparkles } from 'lucide-react';
 
 interface SuggestReplyDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  item: Contact | null;
+  item: AllData | null;
 }
 
 export function SuggestReplyDialog({ isOpen, setIsOpen, item }: SuggestReplyDialogProps) {
   const [reply, setReply] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const originalMessage = item && 'message' in item ? item.message : `Inquiry from ${item?.name} regarding their ${item?.type}.`;
 
   useEffect(() => {
     if (isOpen) {
@@ -35,10 +37,10 @@ export function SuggestReplyDialog({ isOpen, setIsOpen, item }: SuggestReplyDial
   }, [isOpen]);
 
   const handleGenerateReply = async () => {
-    if (!item?.message) return;
+    if (!originalMessage) return;
 
     setIsLoading(true);
-    const result = await getSuggestedReply(item.message);
+    const result = await getSuggestedReply(originalMessage);
     setIsLoading(false);
 
     if (result.success && result.reply) {
@@ -68,15 +70,15 @@ export function SuggestReplyDialog({ isOpen, setIsOpen, item }: SuggestReplyDial
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Send Pre-defined Message</DialogTitle>
+          <DialogTitle>Send Message</DialogTitle>
           <DialogDescription>
             Craft a response to {item?.name}. Use the AI assistant to generate a starting point.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
             <div className='p-4 bg-secondary rounded-lg'>
-                <p className="text-sm font-medium text-muted-foreground">Original Message:</p>
-                <p className="text-sm italic">"{item?.message}"</p>
+                <p className="text-sm font-medium text-muted-foreground">Original Message Context:</p>
+                <p className="text-sm italic">"{originalMessage}"</p>
             </div>
           <Textarea
             placeholder="Your reply..."

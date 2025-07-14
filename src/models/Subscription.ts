@@ -4,7 +4,6 @@ const SubscriptionSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String },
-  location: { type: String },
   address: { type: String },
   purifierName: { type: String },
   planName: { type: String, enum: ['Basic', 'Premium', 'Enterprise'], required: true },

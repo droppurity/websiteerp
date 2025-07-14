@@ -84,7 +84,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
   const lastCheckRef = React.useRef(new Date());
 
   const requestPermission = async () => {
-    if (!messaging) {
+    if (typeof window === 'undefined' || !('Notification' in window) || !messaging) {
         toast({ variant: "destructive", title: "Error", description: "Messaging not supported in this browser." });
         return;
     }
@@ -105,6 +105,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
         const token = await getToken(messaging, { vapidKey: vapidKey });
         if (token) {
           console.log('FCM Token:', token);
+          // You would typically send this token to your server to store it
           toast({ title: "Notifications Enabled!", description: "You will now receive notifications for new requests." });
         } else {
           console.log('Can not get token.');
@@ -122,45 +123,50 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
 
   React.useEffect(() => {
     if (messaging) {
-      onMessage(messaging, (payload) => {
+      const unsubscribe = onMessage(messaging, (payload) => {
         console.log('Message received. ', payload);
         toast({
           title: payload.notification?.title || "New Notification",
           description: payload.notification?.body || "",
         });
+        router.refresh(); 
       });
+      return () => unsubscribe();
     }
-  }, [toast]);
+  }, [toast, router]);
 
   React.useEffect(() => {
     setAllData(initialData);
   }, [initialData]);
 
   React.useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/check-new?lastCheck=${lastCheckRef.current.toISOString()}`);
-        if (!response.ok) {
-          return;
-        }
-        const data = await response.json();
-        
-        lastCheckRef.current = new Date();
+    if (process.env.NODE_ENV === 'development') {
+      const interval = setInterval(async () => {
+        try {
+          const response = await fetch(`/api/check-new?lastCheck=${lastCheckRef.current.toISOString()}`);
+          if (!response.ok) {
+            return;
+          }
+          const data = await response.json();
+          
+          lastCheckRef.current = new Date();
 
-        if (data.newItems > 0) {
-          toast({
-            title: "New Request!",
-            description: `You have ${data.newItems} new request(s). The page will now refresh.`,
-          });
-          router.refresh();
+          if (data.newItems > 0) {
+            toast({
+              title: "New Request!",
+              description: `You have ${data.newItems} new request(s). The page will now refresh.`,
+            });
+            router.refresh();
+          }
+        } catch (error) {
+          console.error("Polling error:", error);
         }
-      } catch (error) {
-        console.error("Polling error:", error);
-      }
-    }, 15000);
+      }, 15000);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [toast, router]);
+
 
   const handleUpdateStatus = (id: string, type: AllData['type'], newStatus: Status) => {
     setAllData(prevData => {
@@ -177,7 +183,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
     setScheduleOpen(true);
   };
 
-  const openSuggestDialog = (item: Contact) => {
+  const openSuggestDialog = (item: AllData) => {
     setSelectedItem(item);
     setSuggestOpen(true);
   };
@@ -193,11 +199,9 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => openScheduleDialog(item)}>Schedule Follow-up</DropdownMenuItem>
-        {item.type === 'contact' && (
-          <DropdownMenuItem onClick={() => openSuggestDialog(item as Contact)}>
-            Send Pre-defined Message
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem onClick={() => openSuggestDialog(item)}>
+            Send Message
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Update Status</DropdownMenuSubTrigger>
@@ -289,7 +293,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                       <TableCell>{sub.phone}</TableCell>
                       <TableCell>{sub.address}</TableCell>
                       <TableCell>{sub.purifierName}</TableCell>
-                      <TableCell>{sub.plan}</TableCell>
+                      <TableCell>{sub.planName}</TableCell>
                       <TableCell>{sub.tenure}</TableCell>
                       <TableCell>{sub.date}</TableCell>
                       <TableCell>
@@ -439,7 +443,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
       <SuggestReplyDialog
         isOpen={isSuggestOpen}
         setIsOpen={setSuggestOpen}
-        item={selectedItem?.type === 'contact' ? selectedItem as Contact : null}
+        item={selectedItem}
       />
     </>
   );

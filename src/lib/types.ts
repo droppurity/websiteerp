@@ -10,7 +10,7 @@ export interface DataItem {
 
 export interface Subscription extends DataItem {
   type: 'subscription';
-  plan: "Basic" | "Premium" | "Enterprise";
+  planName: "Basic" | "Premium" | "Enterprise";
   phone?: string;
   address?: string;
   purifierName?: string;

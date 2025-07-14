@@ -33,7 +33,7 @@ async function getData() {
     email: doc.email,
     date: formatDate(doc.createdAt),
     status: doc.status || 'New',
-    plan: doc.planName,
+    planName: doc.planName,
     phone: doc.phone,
     address: doc.address,
     purifierName: doc.purifierName,
