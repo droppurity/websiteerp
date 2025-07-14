@@ -22,12 +22,12 @@ const formatDate = (date: any) => {
 };
 
 async function getData() {
-  const connection = await connectDB();
-  if (!connection) {
-    return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Could not connect to the database. Please check your MONGODB_URI environment variable.' };
-  }
-
   try {
+    const connection = await connectDB();
+    if (!connection) {
+      return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Could not connect to the database. Please check your MONGODB_URI environment variable.' };
+    }
+
     const subscriptionsDocs = await SubscriptionModel.find({}).sort({ createdAt: -1 }).lean();
     const freeTrialsDocs = await FreeTrialModel.find({}).sort({ createdAt: -1 }).lean();
     const contactsDocs = await ContactModel.find({}).sort({ createdAt: -1 }).lean();
@@ -84,12 +84,16 @@ async function getData() {
     }));
 
     return { subscriptions, trials, contacts, referrals, error: null };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to fetch data:", error);
-    if (process.env.NODE_ENV !== 'development') {
-      return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Failed to fetch data from the database.' };
-    }
-    throw new Error(`Failed to fetch data: ${error}`);
+    // Return a detailed error message to be displayed on the page
+    return { 
+      subscriptions: [], 
+      trials: [], 
+      contacts: [], 
+      referrals: [], 
+      error: `Failed to fetch data from the database. Please check the server logs. Error: ${error.message}` 
+    };
   }
 }
 
@@ -100,11 +104,15 @@ export default async function AdminDashboardPage() {
   if (allData.error) {
      return (
         <div className="flex h-screen items-center justify-center p-4">
-            <Alert variant="destructive" className="max-w-lg">
+            <Alert variant="destructive" className="max-w-2xl">
                 <Terminal className="h-4 w-4" />
-                <AlertTitle>Connection Error</AlertTitle>
-                <AlertDescription>
-                    {allData.error} Please ensure your environment variables are set correctly in your hosting provider.
+                <AlertTitle>Error Fetching Data</AlertTitle>
+                <AlertDescription className="break-words">
+                    <p>There was a problem loading data from the database. This is the error message received:</p>
+                    <pre className="mt-2 whitespace-pre-wrap rounded-md bg-destructive/10 p-2 font-mono text-xs">
+                        {allData.error}
+                    </pre>
+                    <p className="mt-2">Please ensure your environment variables (especially MONGODB_URI) are set correctly in your Netlify deployment settings.</p>
                 </AlertDescription>
             </Alert>
         </div>
