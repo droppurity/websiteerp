@@ -11,6 +11,8 @@ const SubscriptionSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
   type: { type: String, default: 'subscription' },
+}, {
+  collection: 'subscriptions' // Explicitly set the collection name
 });
 
 const SubscriptionModel = models.Subscription || mongoose.model('Subscription', SubscriptionSchema);
