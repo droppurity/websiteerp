@@ -1,7 +1,7 @@
 import { UnifiedViewClient } from './components/unified-view-client';
 import connectDB from '@/lib/mongodb';
 import SubscriptionModel from '@/models/Subscription';
-import TrialModel from '@/models/Trial';
+import FreeTrialModel from '@/models/FreeTrial';
 import ContactModel from '@/models/Contact';
 import ReferralModel from '@/models/Referral';
 import type { Subscription, Trial, Contact, Referral } from '@/lib/types';
@@ -30,7 +30,7 @@ async function getData() {
 
   try {
     const subscriptionsDocs = await SubscriptionModel.find({}).sort({ createdAt: -1 }).lean();
-    const trialsDocs = await TrialModel.find({}).sort({ createdAt: -1 }).lean();
+    const trialsDocs = await FreeTrialModel.find({}).sort({ createdAt: -1 }).lean();
     const contactsDocs = await ContactModel.find({}).sort({ createdAt: -1 }).lean();
     const referralsDocs = await ReferralModel.find({}).sort({ createdAt: -1 }).lean();
 
@@ -87,12 +87,9 @@ async function getData() {
     return { subscriptions, trials, contacts, referrals, error: null };
   } catch (error) {
     console.error("Failed to fetch data:", error);
-    // In a serverless build environment, we might not want to throw an error.
-    // Instead, we return empty data and log the error.
     if (process.env.NODE_ENV !== 'development') {
       return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Failed to fetch data from the database.' };
     }
-    // For local development, it's better to see the error.
     throw new Error(`Failed to fetch data: ${error}`);
   }
 }
