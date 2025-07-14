@@ -54,8 +54,8 @@ async function getData() {
       phone: doc.phone,
       address: doc.address,
       location: doc.location,
-      purifierName: doc.purifier,
-      planName: doc.plan,
+      purifierName: doc.purifierName,
+      planName: doc.planName,
       tenure: doc.tenure,
       date: formatDate(doc.createdAt),
       status: doc.status || 'New',
@@ -74,8 +74,8 @@ async function getData() {
 
     const referrals: Referral[] = referralsDocs.map((doc: any) => ({
       id: doc._id.toString(),
-      name: doc.friendName,
-      referredBy: doc.customerId,
+      name: doc.name,
+      referredBy: doc.referredBy,
       friendMobile: doc.friendMobile,
       friendAddress: doc.friendAddress,
       date: formatDate(doc.createdAt),

@@ -1,8 +1,8 @@
 import mongoose, { Schema, models } from 'mongoose';
 
 const ReferralSchema = new Schema({
-  customerId: { type: String },
-  friendName: { type: String, required: true },
+  referredBy: { type: String },
+  name: { type: String, required: true },
   friendMobile: { type: String },
   friendAddress: { type: String },
   createdAt: { type: Date, default: Date.now },
