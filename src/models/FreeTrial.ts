@@ -1,4 +1,4 @@
-import mongoose, { Schema, models } from 'mongoose';
+import mongoose, { Schema, models, Model } from 'mongoose';
 
 const FreeTrialSchema = new Schema({
   name: { type: String, required: true },
@@ -16,5 +16,5 @@ const FreeTrialSchema = new Schema({
   collection: 'free_trials'
 });
 
-const FreeTrialModel = models.FreeTrial || mongoose.model('FreeTrial', FreeTrialSchema);
+const FreeTrialModel: Model<any> = models.FreeTrial || mongoose.model('FreeTrial', FreeTrialSchema);
 export default FreeTrialModel;

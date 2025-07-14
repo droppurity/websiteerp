@@ -35,8 +35,8 @@ export interface Contact extends DataItem {
 export interface Referral extends DataItem {
   type: 'referral';
   referredBy: string;
-  friendAddress: string;
   friendMobile: string;
+  friendAddress: string;
 }
 
 export type AllData = Subscription | Trial | Contact | Referral;

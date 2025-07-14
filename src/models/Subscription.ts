@@ -1,4 +1,4 @@
-import mongoose, { Schema, models } from 'mongoose';
+import mongoose, { Schema, models, Model } from 'mongoose';
 
 const SubscriptionSchema = new Schema({
   name: { type: String, required: true },
@@ -12,8 +12,8 @@ const SubscriptionSchema = new Schema({
   status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
   type: { type: String, default: 'subscription' },
 }, {
-  collection: 'subscriptions' // Explicitly set the collection name
+  collection: 'subscriptions'
 });
 
-const SubscriptionModel = models.Subscription || mongoose.model('Subscription', SubscriptionSchema);
+const SubscriptionModel: Model<any> = models.Subscription || mongoose.model('Subscription', SubscriptionSchema);
 export default SubscriptionModel;

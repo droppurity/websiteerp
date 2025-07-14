@@ -1,4 +1,4 @@
-import mongoose, { Schema, models } from 'mongoose';
+import mongoose, { Schema, models, Model } from 'mongoose';
 
 const ReferralSchema = new Schema({
   referredBy: { type: String },
@@ -12,5 +12,5 @@ const ReferralSchema = new Schema({
   collection: 'referrals'
 });
 
-const ReferralModel = models.Referral || mongoose.model('Referral', ReferralSchema);
+const ReferralModel: Model<any> = models.Referral || mongoose.model('Referral', ReferralSchema);
 export default ReferralModel;

@@ -1,4 +1,4 @@
-import mongoose, { Schema, models } from 'mongoose';
+import mongoose, { Schema, models, Model } from 'mongoose';
 
 const ContactSchema = new Schema({
   name: { type: String, required: true },
@@ -11,5 +11,5 @@ const ContactSchema = new Schema({
   collection: 'contacts'
 });
 
-const ContactModel = models.Contact || mongoose.model('Contact', ContactSchema);
+const ContactModel: Model<any> = models.Contact || mongoose.model('Contact', ContactSchema);
 export default ContactModel;
