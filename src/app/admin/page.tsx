@@ -2,6 +2,7 @@ import { UnifiedViewClient } from './components/unified-view-client';
 import connectDB from '@/lib/mongodb';
 import SubscriptionModel from '@/models/Subscription';
 import FreeTrialModel from '@/models/FreeTrial';
+import TrialModel from '@/models/Trial';
 import ContactModel from '@/models/Contact';
 import ReferralModel from '@/models/Referral';
 import type { Subscription, Trial, Contact, Referral } from '@/lib/types';
@@ -30,7 +31,8 @@ async function getData() {
 
   try {
     const subscriptionsDocs = await SubscriptionModel.find({}).sort({ createdAt: -1 }).lean();
-    const trialsDocs = await FreeTrialModel.find({}).sort({ createdAt: -1 }).lean();
+    const freeTrialsDocs = await FreeTrialModel.find({}).sort({ createdAt: -1 }).lean();
+    const trialsDocs = await TrialModel.find({}).sort({ createdAt: -1 }).lean();
     const contactsDocs = await ContactModel.find({}).sort({ createdAt: -1 }).lean();
     const referralsDocs = await ReferralModel.find({}).sort({ createdAt: -1 }).lean();
 
@@ -48,15 +50,16 @@ async function getData() {
       type: 'subscription',
     }));
 
-    const trials: Trial[] = trialsDocs.map((doc: any) => ({
+    const allTrialsDocs = [...freeTrialsDocs, ...trialsDocs];
+    const trials: Trial[] = allTrialsDocs.map((doc: any) => ({
       id: doc._id.toString(),
       name: doc.name,
       email: doc.email,
       phone: doc.phone,
       address: doc.address,
       location: doc.location,
-      purifierName: doc.purifier,
-      planName: doc.plan,
+      purifierName: doc.purifier, // Use 'purifier' from DB
+      planName: doc.plan,       // Use 'plan' from DB
       tenure: doc.tenure,
       date: formatDate(doc.createdAt),
       status: doc.status || 'New',
