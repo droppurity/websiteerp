@@ -11,6 +11,10 @@ export interface DataItem {
 export interface Subscription extends DataItem {
   type: 'subscription';
   plan: "Basic" | "Premium" | "Enterprise";
+  phone?: string;
+  address?: string;
+  purifierName?: string;
+  tenure?: string;
 }
 
 export interface Trial extends DataItem {

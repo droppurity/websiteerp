@@ -34,6 +34,10 @@ async function getData() {
     date: formatDate(doc.createdAt),
     status: doc.status || 'New',
     plan: doc.planName,
+    phone: doc.phone,
+    address: doc.address,
+    purifierName: doc.purifierName,
+    tenure: doc.tenure,
     type: 'subscription',
   }));
 

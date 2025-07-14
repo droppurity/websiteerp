@@ -268,7 +268,11 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Address</TableHead>
+                    <TableHead>Purifier</TableHead>
                     <TableHead>Plan</TableHead>
+                    <TableHead>Tenure</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>
@@ -281,7 +285,11 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                     <TableRow key={sub.id}>
                       <TableCell className="font-medium">{sub.name}</TableCell>
                       <TableCell>{sub.email}</TableCell>
+                      <TableCell>{sub.phone}</TableCell>
+                      <TableCell>{sub.address}</TableCell>
+                      <TableCell>{sub.purifierName}</TableCell>
                       <TableCell>{sub.plan}</TableCell>
+                      <TableCell>{sub.tenure}</TableCell>
                       <TableCell>{sub.date}</TableCell>
                       <TableCell>
                         <Badge className={`${statusColors[sub.status]} text-primary-foreground`}>{sub.status}</Badge>
@@ -352,6 +360,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Message</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>
@@ -364,6 +373,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                     <TableRow key={contact.id}>
                       <TableCell className="font-medium">{contact.name}</TableCell>
                       <TableCell>{contact.email}</TableCell>
+                      <TableCell>{contact.message}</TableCell>
                       <TableCell>{contact.date}</TableCell>
                       <TableCell>
                          <Badge className={`${statusColors[contact.status]} text-primary-foreground`}>{contact.status}</Badge>
