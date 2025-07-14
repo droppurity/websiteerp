@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import SubscriptionModel from '@/models/Subscription';
-import TrialModel from '@/models/Trial';
+import FreeTrialModel from '@/models/FreeTrial';
 import ContactModel from '@/models/Contact';
 import ReferralModel from '@/models/Referral';
 
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     const lastCheckDate = new Date(lastCheck);
 
     const newSubscriptions = await SubscriptionModel.countDocuments({ createdAt: { $gt: lastCheckDate } });
-    const newTrials = await TrialModel.countDocuments({ createdAt: { $gt: lastCheckDate } });
+    const newTrials = await FreeTrialModel.countDocuments({ createdAt: { $gt: lastCheckDate } });
     const newContacts = await ContactModel.countDocuments({ createdAt: { $gt: lastCheckDate } });
     const newReferrals = await ReferralModel.countDocuments({ createdAt: { $gt: lastCheckDate } });
 
