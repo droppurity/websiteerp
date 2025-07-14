@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getFirebaseAdmin } from '@/lib/firebase-admin';
 
 export async function GET(request: Request) {
-  const admin = getFirebaseAdmin();
+  const admin = await getFirebaseAdmin();
   if (!admin) {
     return NextResponse.json({ error: 'Firebase Admin SDK not initialized. Please check your FCM_SERVICE_ACCOUNT_JSON environment variable.' }, { status: 500 });
   }

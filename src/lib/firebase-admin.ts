@@ -4,7 +4,7 @@ import * as admin from 'firebase-admin';
 
 let app: admin.app.App | undefined;
 
-export function getFirebaseAdmin() {
+export async function getFirebaseAdmin() {
   if (app) {
     return app;
   }
