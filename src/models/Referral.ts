@@ -9,7 +9,7 @@ const ReferralSchema = new Schema({
   status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
   type: { type: String, default: 'referral' },
 }, {
-  collection: 'referrals' // Explicitly set the collection name
+  collection: 'referrals'
 });
 
 const ReferralModel = models.Referral || mongoose.model('Referral', ReferralSchema);

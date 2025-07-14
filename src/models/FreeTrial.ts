@@ -13,7 +13,7 @@ const FreeTrialSchema = new Schema({
   status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
   type: { type: String, default: 'trial' },
 }, {
-  collection: 'free_trials' // Explicitly set the collection name
+  collection: 'free_trials'
 });
 
 const FreeTrialModel = models.FreeTrial || mongoose.model('FreeTrial', FreeTrialSchema);

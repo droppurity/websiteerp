@@ -8,7 +8,7 @@ const ContactSchema = new Schema({
   status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
   type: { type: String, default: 'contact' },
 }, {
-  collection: 'contacts' // Explicitly set the collection name
+  collection: 'contacts'
 });
 
 const ContactModel = models.Contact || mongoose.model('Contact', ContactSchema);
