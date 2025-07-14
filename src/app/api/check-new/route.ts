@@ -14,7 +14,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    await connectDB();
+    const connection = await connectDB();
+    if (!connection) {
+        return NextResponse.json({ error: 'Database connection not available.' }, { status: 503 });
+    }
+
     const lastCheckDate = new Date(lastCheck);
 
     const newSubscriptions = await SubscriptionModel.countDocuments({ createdAt: { $gt: lastCheckDate } });

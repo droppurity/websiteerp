@@ -2,12 +2,6 @@ import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env'
-  );
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections from growing exponentially
@@ -22,6 +16,13 @@ if (!cached) {
 async function connectDB() {
   if (cached.conn) {
     return cached.conn;
+  }
+
+  if (!MONGODB_URI) {
+    console.error('MONGODB_URI is not defined. Please check your environment variables.');
+    // In a serverless environment, we might not want to throw during build.
+    // The function calling this should handle the lack of connection.
+    return null;
   }
 
   if (!cached.promise) {

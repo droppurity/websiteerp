@@ -5,6 +5,8 @@ import TrialModel from '@/models/Trial';
 import ContactModel from '@/models/Contact';
 import ReferralModel from '@/models/Referral';
 import type { Subscription, Trial, Contact, Referral } from '@/lib/types';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
 
 const formatDate = (date: any) => {
   if (!date) return 'N/A';
@@ -20,68 +22,91 @@ const formatDate = (date: any) => {
 };
 
 async function getData() {
-  await connectDB();
+  const connection = await connectDB();
+  if (!connection) {
+    // Return empty arrays if DB connection fails
+    return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Could not connect to the database. Please check your MONGODB_URI environment variable.' };
+  }
 
-  const subscriptionsDocs = await SubscriptionModel.find({}).lean();
-  const trialsDocs = await TrialModel.find({}).lean();
-  const contactsDocs = await ContactModel.find({}).lean();
-  const referralsDocs = await ReferralModel.find({}).lean();
+  try {
+    const subscriptionsDocs = await SubscriptionModel.find({}).sort({ createdAt: -1 }).lean();
+    const trialsDocs = await TrialModel.find({}).sort({ createdAt: -1 }).lean();
+    const contactsDocs = await ContactModel.find({}).sort({ createdAt: -1 }).lean();
+    const referralsDocs = await ReferralModel.find({}).sort({ createdAt: -1 }).lean();
 
-  const subscriptions: Subscription[] = subscriptionsDocs.map((doc: any) => ({
-    id: doc._id.toString(),
-    name: doc.name,
-    email: doc.email,
-    date: formatDate(doc.createdAt),
-    status: doc.status || 'New',
-    planName: doc.planName,
-    phone: doc.phone,
-    address: doc.address,
-    purifierName: doc.purifierName,
-    tenure: doc.tenure,
-    type: 'subscription',
-  }));
+    const subscriptions: Subscription[] = subscriptionsDocs.map((doc: any) => ({
+      id: doc._id.toString(),
+      name: doc.name,
+      email: doc.email,
+      phone: doc.phone,
+      address: doc.address,
+      purifierName: doc.purifierName,
+      planName: doc.planName,
+      tenure: doc.tenure,
+      date: formatDate(doc.createdAt),
+      status: doc.status || 'New',
+      type: 'subscription',
+    }));
 
-  const trials: Trial[] = trialsDocs.map((doc: any) => ({
-    id: doc._id.toString(),
-    name: doc.name,
-    email: doc.email,
-    date: formatDate(doc.createdAt),
-    status: doc.status || 'New',
-    phone: doc.phone,
-    location: doc.location,
-    address: doc.address,
-    purifierName: doc.purifierName,
-    planName: doc.planName,
-    tenure: doc.tenure,
-    type: 'trial',
-  }));
+    const trials: Trial[] = trialsDocs.map((doc: any) => ({
+      id: doc._id.toString(),
+      name: doc.name,
+      email: doc.email,
+      phone: doc.phone,
+      address: doc.address,
+      location: doc.location,
+      purifierName: doc.purifierName,
+      planName: doc.planName,
+      tenure: doc.tenure,
+      date: formatDate(doc.createdAt),
+      status: doc.status || 'New',
+      type: 'trial',
+    }));
 
-  const contacts: Contact[] = contactsDocs.map((doc: any) => ({
-    id: doc._id.toString(),
-    name: doc.name,
-    email: doc.email,
-    date: formatDate(doc.createdAt),
-    status: doc.status || 'New',
-    message: doc.message,
-    type: 'contact',
-  }));
+    const contacts: Contact[] = contactsDocs.map((doc: any) => ({
+      id: doc._id.toString(),
+      name: doc.name,
+      email: doc.email,
+      message: doc.message,
+      date: formatDate(doc.createdAt),
+      status: doc.status || 'New',
+      type: 'contact',
+    }));
 
-  const referrals: Referral[] = referralsDocs.map((doc: any) => ({
-    id: doc._id.toString(),
-    name: doc.friendName,
-    date: formatDate(doc.createdAt),
-    status: doc.status || 'New',
-    referredBy: doc.customerId,
-    friendAddress: doc.friendAddress,
-    friendMobile: doc.friendMobile,
-    type: 'referral',
-  }));
+    const referrals: Referral[] = referralsDocs.map((doc: any) => ({
+      id: doc._id.toString(),
+      name: doc.friendName,
+      referredBy: doc.customerId,
+      friendMobile: doc.friendMobile,
+      friendAddress: doc.friendAddress,
+      date: formatDate(doc.createdAt),
+      status: doc.status || 'New',
+      type: 'referral',
+    }));
 
-  return { subscriptions, trials, contacts, referrals };
+    return { subscriptions, trials, contacts, referrals, error: null };
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Failed to fetch data from the database.' };
+  }
 }
 
 export default async function AdminDashboardPage() {
   const allData = await getData();
+
+  if (allData.error) {
+     return (
+        <div className="flex h-screen items-center justify-center p-4">
+            <Alert variant="destructive" className="max-w-lg">
+                <Terminal className="h-4 w-4" />
+                <AlertTitle>Connection Error</AlertTitle>
+                <AlertDescription>
+                    {allData.error}
+                </AlertDescription>
+            </Alert>
+        </div>
+    )
+  }
 
   return (
     <div className="flex-1 overflow-auto">
