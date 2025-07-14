@@ -1,20 +1,37 @@
-import mongoose, { Schema, models, Model } from 'mongoose';
 
-const FreeTrialSchema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  phone: { type: String },
-  address: { type: String },
-  location: { type: String },
-  purifierName: { type: String },
-  planName: { type: String },
-  tenure: { type: String },
-  createdAt: { type: Date, default: Date.now },
-  status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
-  type: { type: String, default: 'trial' },
-}, {
-  collection: 'free_trials'
-});
+import mongoose from 'mongoose';
 
-const FreeTrialModel: Model<any> = models.FreeTrial || mongoose.model('FreeTrial', FreeTrialSchema);
-export default FreeTrialModel;
+const FreeTrialSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  address: {
+    type: String,
+  },
+  location: {
+    type: String,
+  },
+  purifierName: {
+    type: String,
+  },
+  planName: {
+    type: String,
+  },
+  tenure: {
+    type: String,
+  },
+  status: {
+    type: String,
+    enum: ["New", "Contacted", "Resolved", "Closed"],
+    default: "New",
+  },
+}, { timestamps: true });
+
+export default mongoose.models.FreeTrial || mongoose.model('FreeTrial', FreeTrialSchema, 'free_trials');
