@@ -2,7 +2,6 @@ import { UnifiedViewClient } from './components/unified-view-client';
 import connectDB from '@/lib/mongodb';
 import SubscriptionModel from '@/models/Subscription';
 import FreeTrialModel from '@/models/FreeTrial';
-import TrialModel from '@/models/Trial';
 import ContactModel from '@/models/Contact';
 import ReferralModel from '@/models/Referral';
 import type { Subscription, Trial, Contact, Referral } from '@/lib/types';
@@ -25,14 +24,12 @@ const formatDate = (date: any) => {
 async function getData() {
   const connection = await connectDB();
   if (!connection) {
-    // Return empty arrays if DB connection fails
     return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Could not connect to the database. Please check your MONGODB_URI environment variable.' };
   }
 
   try {
     const subscriptionsDocs = await SubscriptionModel.find({}).sort({ createdAt: -1 }).lean();
     const freeTrialsDocs = await FreeTrialModel.find({}).sort({ createdAt: -1 }).lean();
-    const trialsDocs = await TrialModel.find({}).sort({ createdAt: -1 }).lean();
     const contactsDocs = await ContactModel.find({}).sort({ createdAt: -1 }).lean();
     const referralsDocs = await ReferralModel.find({}).sort({ createdAt: -1 }).lean();
 
@@ -50,16 +47,15 @@ async function getData() {
       type: 'subscription',
     }));
 
-    const allTrialsDocs = [...freeTrialsDocs, ...trialsDocs];
-    const trials: Trial[] = allTrialsDocs.map((doc: any) => ({
+    const trials: Trial[] = freeTrialsDocs.map((doc: any) => ({
       id: doc._id.toString(),
       name: doc.name,
       email: doc.email,
       phone: doc.phone,
       address: doc.address,
       location: doc.location,
-      purifierName: doc.purifier, // Use 'purifier' from DB
-      planName: doc.plan,       // Use 'plan' from DB
+      purifierName: doc.purifier,
+      planName: doc.plan,
       tenure: doc.tenure,
       date: formatDate(doc.createdAt),
       status: doc.status || 'New',
