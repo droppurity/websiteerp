@@ -1,7 +1,7 @@
 'use client';
 
 import type { FC, ReactNode } from 'react';
-import React, { useState, useEffect, useRef } from 'react';
+import React, from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ import type { AllData, Contact, Status, Subscription, Trial, Referral } from '@/
 import {
   Bell,
   CalendarClock,
+  MapPin,
   MessageCircle,
   MoreHorizontal,
   Share2,
@@ -73,14 +74,14 @@ const statusColors: Record<Status, string> = {
 };
 
 export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps) {
-  const [allData, setAllData] = useState(initialData);
-  const [isScheduleOpen, setScheduleOpen] = useState(false);
-  const [isSuggestOpen, setSuggestOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<AllData | null>(null);
+  const [allData, setAllData] = React.useState(initialData);
+  const [isScheduleOpen, setScheduleOpen] = React.useState(false);
+  const [isSuggestOpen, setSuggestOpen] = React.useState(false);
+  const [selectedItem, setSelectedItem] = React.useState<AllData | null>(null);
   
   const { toast } = useToast();
   const router = useRouter();
-  const lastCheckRef = useRef(new Date());
+  const lastCheckRef = React.useRef(new Date());
 
   const requestPermission = async () => {
     if (!messaging) {
@@ -119,7 +120,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (messaging) {
       onMessage(messaging, (payload) => {
         console.log('Message received. ', payload);
@@ -131,11 +132,11 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
     }
   }, [toast]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setAllData(initialData);
   }, [initialData]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const interval = setInterval(async () => {
       try {
         const response = await fetch(`/api/check-new?lastCheck=${lastCheckRef.current.toISOString()}`);
@@ -312,6 +313,7 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                     <TableHead>Email</TableHead>
                     <TableHead>Phone</TableHead>
                     <TableHead>Address</TableHead>
+                    <TableHead>Map Link</TableHead>
                     <TableHead>Purifier</TableHead>
                     <TableHead>Plan</TableHead>
                     <TableHead>Tenure</TableHead>
@@ -328,13 +330,15 @@ export function UnifiedViewClient({ data: initialData }: UnifiedViewClientProps)
                       <TableCell className="font-medium">{trial.name}</TableCell>
                       <TableCell>{trial.email}</TableCell>
                       <TableCell>{trial.phone}</TableCell>
+                      <TableCell>{trial.address}</TableCell>
                       <TableCell>
                         {trial.location ? (
-                          <a href={trial.location} target="_blank" rel="noopener noreferrer" className="underline">
-                            {trial.address}
+                          <a href={trial.location} target="_blank" rel="noopener noreferrer" className="underline flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            Open Map
                           </a>
                         ) : (
-                          trial.address
+                          'N/A'
                         )}
                       </TableCell>
                       <TableCell>{trial.purifierName}</TableCell>
