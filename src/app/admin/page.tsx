@@ -101,7 +101,7 @@ export default async function AdminDashboardPage() {
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Connection Error</AlertTitle>
                 <AlertDescription>
-                    {allData.error}
+                    {allData.error} Please ensure your environment variables are set correctly in your hosting provider.
                 </AlertDescription>
             </Alert>
         </div>
