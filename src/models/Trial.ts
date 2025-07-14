@@ -9,7 +9,7 @@ const TrialSchema = new Schema({
   purifierName: { type: String },
   planName: { type: String },
   tenure: { type: String },
-  createdAt: { type: Date, required: true, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
   type: { type: String, default: 'trial' },
 });

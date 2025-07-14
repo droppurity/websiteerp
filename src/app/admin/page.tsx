@@ -87,9 +87,16 @@ async function getData() {
     return { subscriptions, trials, contacts, referrals, error: null };
   } catch (error) {
     console.error("Failed to fetch data:", error);
-    return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Failed to fetch data from the database.' };
+    // In a serverless build environment, we might not want to throw an error.
+    // Instead, we return empty data and log the error.
+    if (process.env.NODE_ENV !== 'development') {
+      return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Failed to fetch data from the database.' };
+    }
+    // For local development, it's better to see the error.
+    throw new Error(`Failed to fetch data: ${error}`);
   }
 }
+
 
 export default async function AdminDashboardPage() {
   const allData = await getData();

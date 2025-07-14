@@ -6,9 +6,9 @@ const SubscriptionSchema = new Schema({
   phone: { type: String },
   address: { type: String },
   purifierName: { type: String },
-  planName: { type: String, enum: ['Basic', 'Premium', 'Enterprise'], required: true },
+  planName: { type: String, enum: ['Basic', 'Premium', 'Enterprise'] },
   tenure: { type: String },
-  createdAt: { type: Date, required: true, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['New', 'Contacted', 'Resolved', 'Closed'], default: 'New' },
   type: { type: String, default: 'subscription' },
 });
