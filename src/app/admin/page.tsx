@@ -25,7 +25,7 @@ async function getData() {
   try {
     const connection = await connectDB();
     if (!connection) {
-      return { subscriptions: [], trials: [], contacts: [], referrals: [], error: 'Could not connect to the database. Please check your MONGODB_URI environment variable.' };
+      throw new Error('Could not connect to the database. Please check your MONGODB_URI environment variable.');
     }
 
     const subscriptionsDocs = await SubscriptionModel.find({}).sort({ createdAt: -1 }).lean();
@@ -74,7 +74,8 @@ async function getData() {
 
     const referrals: Referral[] = referralsDocs.map((doc: any) => ({
       id: doc._id.toString(),
-      name: doc.name,
+      name: doc.friendName, // Use friendName for the 'name' field
+      friendName: doc.friendName,
       referredBy: doc.referredBy,
       friendMobile: doc.friendMobile,
       friendAddress: doc.friendAddress,
@@ -99,6 +100,9 @@ async function getData() {
 
 
 export default async function AdminDashboardPage() {
+  // Revalidate every 60 seconds
+  // export const revalidate = 60;
+
   const allData = await getData();
 
   if (allData.error) {
@@ -112,7 +116,7 @@ export default async function AdminDashboardPage() {
                     <pre className="mt-2 whitespace-pre-wrap rounded-md bg-destructive/10 p-2 font-mono text-xs">
                         {allData.error}
                     </pre>
-                    <p className="mt-2">Please ensure your environment variables (especially MONGODB_URI) are set correctly in your Netlify deployment settings.</p>
+                    <p className="mt-2">Please ensure your environment variables (especially MONGODB_URI) are set correctly and that the database is accessible from the build environment.</p>
                 </AlertDescription>
             </Alert>
         </div>

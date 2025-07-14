@@ -1,8 +1,8 @@
 
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 const ReferralSchema = new mongoose.Schema({
-  name: {
+  friendName: {
     type: String,
     required: true,
   },
@@ -23,4 +23,14 @@ const ReferralSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-export default mongoose.models.Referral || mongoose.model('Referral', ReferralSchema, 'referrals');
+let ReferralModel: Model<any>;
+
+try {
+  // Try to retrieve the existing model to prevent OverwriteModelError
+  ReferralModel = mongoose.model('Referral');
+} catch {
+  // If the model doesn't exist, create it
+  ReferralModel = mongoose.model('Referral', ReferralSchema, 'referrals');
+}
+
+export default ReferralModel;
